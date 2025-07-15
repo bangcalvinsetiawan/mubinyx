@@ -1,0 +1,48 @@
+# Security Configuration untuk Production
+
+# Deny access to sensitive files
+<Files ~ "\.env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ~ "\.json$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ~ "\.ts$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ~ "\.log$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:; font-src 'self' https:; object-src 'none'; media-src 'self'; frame-src 'none';"
+</IfModule>
+
+# Prevent access to backup files
+<FilesMatch "\.(bak|backup|old|tmp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent access to git files
+<FilesMatch "^\.git">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Hide server signature
+ServerTokens Prod
+ServerSignature Off

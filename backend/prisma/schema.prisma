@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  password           String
+  name               String
+  phone              String?
+  role               String              @default("USER")
+  status             String              @default("PENDING")
+  referralCode       String              @unique
+  referredBy         String?
+  emailVerified      Boolean             @default(false)
+  twoFactorEnabled   Boolean             @default(false)
+  twoFactorSecret    String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  investments        Investment[]
+  notifications      Notification[]
+  transactions       Transaction[]
+  referrer           User?               @relation("Referrals", fields: [referredBy], references: [id])
+  referrals          User[]              @relation("Referrals")
+  verification       UserVerification?
+  wallet             Wallet?
+  walletTransactions WalletTransaction[] @relation("WalletTransactions")
+}
+
+model UserVerification {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  documentType    String
+  documentNumber  String
+  documentUrl     String
+  selfieUrl       String
+  status          String
+  rejectionReason String?
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model ProjectCategory {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  icon        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+}
+
+model Project {
+  id              String          @id @default(cuid())
+  categoryId      String
+  name            String
+  slug            String          @unique
+  description     String
+  imageUrl        String?
+  minInvestment   Decimal
+  maxInvestment   Decimal
+  targetAmount    Decimal
+  collectedAmount Decimal         @default(0)
+  roiPercentage   Decimal
+  durationMonths  Int
+  startDate       DateTime?
+  endDate         DateTime?
+  status          String          @default("DRAFT")
+  riskLevel       String
+  riskAnalysis    Json?
+  financialData   Json?
+  documents       String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  investments     Investment[]
+  category        ProjectCategory @relation(fields: [categoryId], references: [id])
+  reports         ProjectReport[]
+  updates         ProjectUpdate[]
+}
+
+model Wallet {
+  id            String              @id @default(cuid())
+  userId        String              @unique
+  balance       Decimal             @default(0)
+  lockedBalance Decimal             @default(0)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  user          User                @relation(fields: [userId], references: [id])
+  transactions  WalletTransaction[]
+}
+
+model CryptoNetwork {
+  id            String              @id @default(cuid())
+  name          String
+  symbol        String
+  chainId       Int?
+  rpcUrl        String?
+  confirmations Int                 @default(3)
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  transactions  CryptoTransaction[]
+  wallets       CryptoWallet[]
+}
+
+model CryptoWallet {
+  id           String              @id @default(cuid())
+  networkId    String
+  address      String
+  type         String
+  isActive     Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  transactions CryptoTransaction[]
+  network      CryptoNetwork       @relation(fields: [networkId], references: [id])
+}
+
+model Transaction {
+  id                String             @id @default(cuid())
+  userId            String
+  code              String             @unique
+  type              String
+  amount            Decimal
+  status            String             @default("PENDING")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  cryptoTransaction CryptoTransaction?
+  user              User               @relation(fields: [userId], references: [id])
+}
+
+model CryptoTransaction {
+  id            String        @id @default(cuid())
+  transactionId String        @unique
+  walletId      String
+  networkId     String
+  fromAddress   String
+  toAddress     String
+  txHash        String?       @unique
+  amountCrypto  Decimal
+  amountUsd     Decimal
+  exchangeRate  Decimal
+  confirmations Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  network       CryptoNetwork @relation(fields: [networkId], references: [id])
+  wallet        CryptoWallet  @relation(fields: [walletId], references: [id])
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+}
+
+model Investment {
+  id             String                  @id @default(cuid())
+  userId         String
+  projectId      String
+  amount         Decimal
+  expectedReturn Decimal
+  startDate      DateTime                @default(now())
+  maturityDate   DateTime
+  status         String
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  project        Project                 @relation(fields: [projectId], references: [id])
+  user           User                    @relation(fields: [userId], references: [id])
+  transactions   InvestmentTransaction[]
+}
+
+model WalletTransaction {
+  id            String   @id @default(cuid())
+  userId        String
+  walletId      String
+  type          String
+  amount        Decimal
+  balanceBefore Decimal  @default(0)
+  balanceAfter  Decimal  @default(0)
+  status        String   @default("PENDING")
+  referenceType String?
+  referenceId   String?
+  description   String?
+  metadata      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  wallet        Wallet   @relation(fields: [walletId], references: [id])
+  user          User     @relation("WalletTransactions", fields: [userId], references: [id])
+}
+
+model InvestmentTransaction {
+  id           String     @id @default(cuid())
+  investmentId String
+  type         String
+  amount       Decimal
+  description  String?
+  createdAt    DateTime   @default(now())
+  investment   Investment @relation(fields: [investmentId], references: [id])
+}
+
+model ProjectUpdate {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  content     String
+  attachments String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model ProjectReport {
+  id              String   @id @default(cuid())
+  projectId       String
+  title           String
+  periodType      String
+  periodStart     DateTime
+  periodEnd       DateTime
+  performanceData Json
+  summary         String?
+  attachments     String?
+  createdAt       DateTime @default(now())
+  project         Project  @relation(fields: [projectId], references: [id])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  data      Json?
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model CmsSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String
+  group     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CmsContent {
+  id        String   @id @default(cuid())
+  section   String   @unique
+  title     String
+  content   String
+  data      Json?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Article {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  content       String
+  excerpt       String?
+  featuredImage String?
+  authorId      String
+  status        String
+  viewCount     Int       @default(0)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}

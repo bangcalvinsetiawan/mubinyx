@@ -1,0 +1,52 @@
+# 🚀 SSH Upload Commands for Hostinger
+# Copy dan paste commands ini satu per satu
+
+# 1️⃣ First, in your SSH terminal, create directories:
+mkdir -p public_html/api
+mkdir -p public_html/uploads
+
+# 2️⃣ Exit SSH (type 'exit') and run these from your local Windows terminal:
+
+# Upload frontend files:
+scp -P 65002 -r frontend-build/* u503002510@194.163.35.221:public_html/
+
+# Upload backend files:
+scp -P 65002 -r backend-build/* u503002510@194.163.35.221:public_html/api/
+
+# Upload configuration:
+scp -P 65002 .htaccess u503002510@194.163.35.221:public_html/
+scp -P 65002 .env.production u503002510@194.163.35.221:public_html/api/.env
+
+# 3️⃣ Reconnect to SSH (ssh -p 65002 u503002510@194.163.35.221) and run:
+
+# Set permissions:
+chmod -R 755 public_html
+find public_html -name "*.html" -exec chmod 644 {} \;
+find public_html -name "*.js" -exec chmod 644 {} \;
+find public_html -name "*.css" -exec chmod 644 {} \;
+
+# Install dependencies:
+cd public_html/api
+npm install --production
+
+# Setup database:
+npx prisma generate
+npx prisma migrate deploy
+
+# 4️⃣ Edit environment file:
+nano .env
+
+# In nano editor, update these lines:
+DATABASE_URL="mysql://u503002510_mubinyx:YOUR_DB_PASSWORD@localhost:3306/u503002510_mubinyx"
+JWT_SECRET="your-super-secret-jwt-key-minimum-32-characters-long"
+NODE_ENV="production"
+PORT=3000
+
+# Save in nano: Ctrl+X, then Y, then Enter
+
+# 5️⃣ Test the setup:
+node main.js
+
+# 6️⃣ Check if everything works:
+curl http://localhost:3000
+curl https://yourdomain.com
