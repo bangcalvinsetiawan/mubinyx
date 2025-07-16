@@ -1,0 +1,19 @@
+flowchart TD
+    A[👤 User] --> B[🪙 Select Crypto Payment]
+    B --> C[🌐 Choose Network]
+    C --> D[💰 Enter Amount]
+    D --> E[🔗 Generate Wallet Address]
+    E --> F[📱 Display QR Code]
+    F --> G[👤 User Sends Crypto]
+    G --> H[🔄 Monitor Blockchain]
+    H --> I{Transaction Found?}
+    I -->|No| J[⏳ Keep Monitoring]
+    J --> H
+    I -->|Yes| K[📊 Check Confirmations]
+    K --> L{Enough Confirmations?}
+    L -->|No| M[⏳ Wait for More]
+    M --> K
+    L -->|Yes| N[💱 Calculate USD Value]
+    N --> O[💰 Update User Balance]
+    O --> P[📧 Payment Confirmation]
+    P --> Q[📊 Record Transaction]

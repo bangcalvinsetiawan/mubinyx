@@ -1,0 +1,17 @@
+flowchart TD
+    A[👨‍💼 Admin] --> B[📋 View Pending Transactions]
+    B --> C[🔍 Review Transaction Details]
+    C --> D[👤 Check User Information]
+    D --> E[📄 Verify Documents]
+    E --> F{Transaction Valid?}
+    F -->|No| G[❌ Reject Transaction]
+    F -->|Yes| H[✅ Approve Transaction]
+    
+    G --> I[📝 Add Rejection Reason]
+    I --> J[📧 Notify User]
+    J --> K[💾 Update Transaction Status]
+    
+    H --> L[💰 Process Transaction]
+    L --> M[📧 Notify User]
+    M --> N[💾 Update Balances]
+    N --> O[📊 Generate Transaction Record]

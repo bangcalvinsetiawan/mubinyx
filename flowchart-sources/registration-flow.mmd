@@ -1,0 +1,24 @@
+flowchart TD
+    A[👤 New User] --> B[📝 Fill Registration Form]
+    B --> C{Valid Data?}
+    C -->|No| D[❌ Show Validation Errors]
+    D --> B
+    C -->|Yes| E[💾 Create User Account]
+    E --> F[📧 Send Verification Email]
+    F --> G[📱 User Checks Email]
+    G --> H[🔗 Click Verification Link]
+    H --> I[✅ Email Verified]
+    I --> J[🔐 User Can Login]
+    
+    J --> K[📝 Enter Credentials]
+    K --> L{Valid Login?}
+    L -->|No| M[❌ Invalid Credentials]
+    M --> K
+    L -->|Yes| N{2FA Enabled?}
+    N -->|No| O[✅ Login Success]
+    N -->|Yes| P[📱 Enter 2FA Code]
+    P --> Q{Valid 2FA?}
+    Q -->|No| R[❌ Invalid 2FA]
+    R --> P
+    Q -->|Yes| O
+    O --> S[🏠 Redirect to Dashboard]

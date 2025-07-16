@@ -1,0 +1,19 @@
+flowchart TD
+    A[🎯 System Event] --> B{Event Type?}
+    B -->|User Registration| C[📧 Welcome Email]
+    B -->|KYC Status| D[📧 KYC Notification]
+    B -->|Transaction| E[📧 Transaction Alert]
+    B -->|Investment| F[📧 Investment Update]
+    B -->|Security| G[🔒 Security Alert]
+    
+    C --> H[💾 Save to Database]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+    
+    H --> I[📱 Push to User]
+    I --> J[🔔 In-App Notification]
+    J --> K{User Online?}
+    K -->|Yes| L[📲 Real-time Display]
+    K -->|No| M[💾 Queue for Later]

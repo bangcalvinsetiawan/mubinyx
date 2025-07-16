@@ -1,0 +1,39 @@
+flowchart TD 
+    A[👤 User] --> B[👛 Access Wallet] 
+    B --> C{Action Type?} 
+    C -->|Deposit| D[💰 Deposit Flow] 
+    C -->|Withdraw| E[💸 Withdrawal Flow] 
+    C -->|Transfer| F[🔄 Transfer Flow] 
+    
+    %% Deposit Flow 
+    D --> G{Payment Method?} 
+    G -->|Bank Transfer| H[🏦 Bank Deposit] 
+    G -->|Crypto| I[🪙 Crypto Deposit] 
+    
+    H --> J[📝 Upload Proof] 
+    J --> K[⏳ Pending Verification] 
+    K --> L[👨‍💼 Admin Reviews] 
+    L --> M{Valid?} 
+    M -->|Yes| N[✅ Balance Updated] 
+    M -->|No| O[❌ Rejected] 
+    
+    I --> P[🔗 Generate Crypto Address] 
+    P --> Q[📱 User Sends Crypto] 
+    Q --> R[🔄 Blockchain Confirmation] 
+    R --> S{Confirmed?} 
+    S -->|Yes| N 
+    S -->|No| T[⏳ Wait for Confirmations] 
+    T --> R 
+    
+    %% Withdrawal Flow 
+    E --> U{KYC Verified?} 
+    U -->|No| V[❌ KYC Required] 
+    U -->|Yes| W[💸 Enter Amount] 
+    W --> X{Sufficient Balance?} 
+    X -->|No| Y[❌ Insufficient Funds] 
+    X -->|Yes| Z[📝 Withdrawal Request] 
+    Z --> AA[👨‍💼 Admin Approval] 
+    AA --> BB{Approved?} 
+    BB -->|Yes| CC[💰 Process Payment] 
+    BB -->|No| DD[❌ Request Rejected] 
+    CC --> EE[✅ Withdrawal Complete] 

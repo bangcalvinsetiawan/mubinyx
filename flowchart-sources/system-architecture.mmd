@@ -1,0 +1,45 @@
+flowchart TB
+    subgraph "Frontend (Next.js)"
+        A[🖥️ User Interface]
+        B[📱 Admin Panel]
+        C[🔐 Authentication]
+        D[📊 Dashboard Components]
+    end
+    
+    subgraph "Backend (NestJS)"
+        E[🛡️ Auth Module]
+        F[👤 User Module]
+        G[💰 Wallet Module]
+        H[🏗️ Project Module]
+        I[📋 KYC Module]
+        J[🔔 Notification Module]
+    end
+    
+    subgraph "Database (SQLite + Prisma)"
+        K[👥 Users]
+        L[💸 Transactions]
+        M[🏗️ Projects]
+        N[👛 Wallets]
+        O[🪙 Crypto Data]
+    end
+    
+    subgraph "External Services"
+        P[📧 Email Service]
+        Q[🌐 Blockchain APIs]
+        R[💱 Exchange Rate APIs]
+    end
+    
+    A --> E
+    B --> F
+    C --> E
+    D --> G
+    
+    E --> K
+    F --> K
+    G --> N
+    H --> M
+    I --> K
+    J --> P
+    
+    G --> Q
+    G --> R

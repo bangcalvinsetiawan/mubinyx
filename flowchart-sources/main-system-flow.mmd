@@ -1,0 +1,40 @@
+flowchart TD
+    A[👤 User Access] --> B{Registered?}
+    B -->|No| C[📝 Registration]
+    B -->|Yes| D[🔐 Login]
+    
+    C --> E[📧 Email Verification]
+    E --> F[✅ Account Activated]
+    F --> D
+    
+    D --> G{Login Success?}
+    G -->|No| H[❌ Error Message]
+    H --> D
+    G -->|Yes| I[🏠 Dashboard]
+    
+    I --> J{User Role?}
+    J -->|USER| K[👤 User Dashboard]
+    J -->|ADMIN| L[👨‍💼 Admin Dashboard]
+    J -->|SUPER_ADMIN| M[🔧 Super Admin Dashboard]
+    
+    %% User Flow
+    K --> N[Available Features]
+    N --> O[📋 KYC Verification]
+    N --> P[💰 Wallet Management]
+    N --> Q[🏗️ Browse Projects]
+    N --> R[📊 My Investments]
+    N --> S[🔔 Notifications]
+    
+    %% Admin Flow
+    L --> T[Admin Features]
+    T --> U[👥 User Management]
+    T --> V[💸 Transaction Approval]
+    T --> W[🏗️ Project Management]
+    T --> X[📊 Analytics]
+    
+    %% Super Admin Flow
+    M --> Y[Super Admin Features]
+    Y --> Z[⚙️ System Settings]
+    Y --> AA[🌐 CMS Management]
+    Y --> BB[🪙 Crypto Networks]
+    Y --> CC[📝 Content Management]

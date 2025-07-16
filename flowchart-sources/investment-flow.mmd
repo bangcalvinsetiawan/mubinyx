@@ -1,0 +1,19 @@
+flowchart TD
+    A[👤 Verified User] --> B[🏗️ Browse Projects]
+    B --> C[📊 View Project Details]
+    C --> D{Interested?}
+    D -->|No| B
+    D -->|Yes| E[💰 Check Investment Limits]
+    E --> F{Within Limits?}
+    F -->|No| G[⚠️ Show Limit Warning]
+    G --> C
+    F -->|Yes| H[💳 Enter Investment Amount]
+    H --> I{Sufficient Balance?}
+    I -->|No| J[💰 Deposit Required]
+    J --> K[Top Up Wallet]
+    K --> H
+    I -->|Yes| L[📝 Confirm Investment]
+    L --> M[💾 Create Investment Record]
+    M --> N[💸 Deduct from Wallet]
+    N --> O[📧 Investment Confirmation]
+    O --> P[📊 Track Investment Progress]

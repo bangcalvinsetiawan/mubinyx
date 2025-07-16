@@ -1,0 +1,16 @@
+flowchart TD
+    A[👤 User] --> B[📋 Start KYC Process]
+    B --> C[📄 Upload ID Document]
+    C --> D[🤳 Upload Selfie]
+    D --> E[💾 Submit KYC Data]
+    E --> F[⏳ Pending Review]
+    F --> G[👨‍💼 Admin Reviews]
+    G --> H{KYC Valid?}
+    H -->|Yes| I[✅ KYC Approved]
+    H -->|No| J[❌ KYC Rejected]
+    J --> K[📝 Rejection Reason]
+    K --> L[📧 Notify User]
+    L --> M[🔄 User Can Resubmit]
+    M --> B
+    I --> N[📧 Approval Notification]
+    N --> O[🎉 Full Platform Access]
