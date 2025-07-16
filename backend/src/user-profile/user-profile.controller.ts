@@ -9,7 +9,7 @@ export class UserProfileController {
 
   @Get('dashboard')
   async getUserDashboard(@Request() req) {
-    return this.userProfileService.getUserCompleteProfile(req.user.userId);
+    return this.userProfileService.getUserCompleteProfile(req.user.id);
   }
 
   @Get('detailed/:userId')

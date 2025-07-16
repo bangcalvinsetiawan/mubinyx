@@ -7,7 +7,7 @@ import Navigation from './Navigation'
 
 interface PendingTransaction {
   id: string
-  user: {
+  user?: {
     id: string
     email: string
     firstName: string
@@ -281,9 +281,9 @@ export default function AdminTransactionApproval() {
                           <div>
                             <p className="text-slate-400">User:</p>
                             <p className="text-white font-medium">
-                              {transaction.user.firstName} {transaction.user.lastName}
+                              {transaction.user?.firstName || 'Unknown'} {transaction.user?.lastName || 'User'}
                             </p>
-                            <p className="text-slate-400">{transaction.user.email}</p>
+                            <p className="text-slate-400">{transaction.user?.email || 'No email'}</p>
                           </div>
                           
                           <div>

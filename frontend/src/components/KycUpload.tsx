@@ -41,11 +41,26 @@ export default function KycUpload() {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        setKycData(data);
+        const responseText = await response.text();
+        if (responseText.trim()) {
+          try {
+            const data = JSON.parse(responseText);
+            setKycData(data);
+          } catch (jsonError) {
+            console.error('Error parsing JSON:', jsonError);
+            setKycData(null);
+          }
+        } else {
+          // Empty response means no KYC data
+          setKycData(null);
+        }
+      } else {
+        console.error('Failed to fetch KYC status:', response.status, response.statusText);
+        setKycData(null);
       }
     } catch (error) {
       console.error('Error fetching KYC status:', error);
+      setKycData(null);
     } finally {
       setLoading(false);
     }
@@ -97,7 +112,8 @@ export default function KycUpload() {
     const badges = {
       'APPROVED': 'bg-green-100 text-green-800',
       'PENDING': 'bg-yellow-100 text-yellow-800',
-      'REJECTED': 'bg-red-100 text-red-800'
+      'REJECTED': 'bg-red-100 text-red-800',
+      'NOT_SUBMITTED': 'bg-gray-100 text-gray-800'
     };
     return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800';
   };

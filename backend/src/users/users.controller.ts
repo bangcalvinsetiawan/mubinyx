@@ -19,7 +19,7 @@ export class UsersController {
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
     // Allow users to view their own profile, or admin to view any profile
-    if (req.user.userId !== id && req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+    if (req.user.id !== id && req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
       throw new Error('Unauthorized');
     }
     return this.usersService.findOne(id);
@@ -43,12 +43,12 @@ export class UsersController {
   @Put(':id')
   async update(@Request() req, @Param('id') id: string, @Body() updateUserDto: any) {
     // Allow users to update their own profile, or admin to update any profile
-    if (req.user.userId !== id && req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+    if (req.user.id !== id && req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
       throw new Error('Unauthorized');
     }
 
     // Prevent role escalation
-    if (updateUserDto.role && req.user.userId === id) {
+    if (updateUserDto.role && req.user.id === id) {
       throw new Error('Cannot change your own role');
     }
 
@@ -67,7 +67,7 @@ export class UsersController {
     }
 
     // Prevent admin from deactivating themselves
-    if (req.user.userId === id) {
+    if (req.user.id === id) {
       throw new Error('Cannot change your own status');
     }
 
@@ -82,7 +82,7 @@ export class UsersController {
     }
 
     // Prevent admin from deleting themselves
-    if (req.user.userId === id) {
+    if (req.user.id === id) {
       throw new Error('Cannot delete your own account');
     }
 

@@ -108,9 +108,14 @@ export default function WalletManagement() {
         setTopUpData({ amount: '', paymentMethod: 'bank_transfer', paymentReference: '', notes: '' })
         fetchWalletData()
         fetchTransactions()
+      } else {
+        const errorData = await response.text()
+        console.error('Top up error:', errorData)
+        alert(`Error: ${errorData}`)
       }
     } catch (error) {
       console.error('Error creating top up request:', error)
+      alert('Network error. Please try again.')
     }
   }
 
@@ -137,9 +142,14 @@ export default function WalletManagement() {
         setWithdrawData({ amount: '', withdrawMethod: 'bank_transfer', accountDetails: '', notes: '' })
         fetchWalletData()
         fetchTransactions()
+      } else {
+        const errorData = await response.text()
+        console.error('Withdraw error:', errorData)
+        alert(`Error: ${errorData}`)
       }
     } catch (error) {
       console.error('Error creating withdrawal request:', error)
+      alert('Network error. Please try again.')
     }
   }
 

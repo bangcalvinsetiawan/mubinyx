@@ -177,6 +177,12 @@ export class WalletService {
 
     return transactions.map(tx => ({
       ...tx,
+      user: tx.wallet.user ? {
+        id: tx.wallet.user.id,
+        email: tx.wallet.user.email,
+        firstName: tx.wallet.user.name.split(' ')[0] || tx.wallet.user.name,
+        lastName: tx.wallet.user.name.split(' ').slice(1).join(' ') || ''
+      } : null,
       amountFormatted: this.formatCurrency(Number(tx.amount))
     }));
   }

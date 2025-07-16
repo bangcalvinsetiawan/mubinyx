@@ -39,12 +39,13 @@ export class KycController {
       selfie: files.selfie[0]
     };
 
-    return this.kycService.submitKyc(req.user.userId, kycData, fileData);
+    return this.kycService.submitKyc(req.user.id, kycData, fileData);
   }
 
   @Get('my-status')
   async getMyKycStatus(@Request() req) {
-    return this.kycService.getUserKyc(req.user.userId);
+    const kycData = await this.kycService.getUserKyc(req.user.id);
+    return kycData || { status: 'NOT_SUBMITTED' };
   }
 
   @Get('pending')
@@ -64,7 +65,7 @@ export class KycController {
       throw new BadRequestException('Insufficient permissions');
     }
 
-    return this.kycService.approveKyc(id, req.user.userId);
+    return this.kycService.approveKyc(id, req.user.id);
   }
 
   @Patch(':id/reject')
@@ -78,13 +79,13 @@ export class KycController {
       throw new BadRequestException('Insufficient permissions');
     }
 
-    return this.kycService.rejectKyc(id, req.user.userId, body.reason);
+    return this.kycService.rejectKyc(id, req.user.id, body.reason);
   }
 
   @Get(':userId')
   async getUserKyc(@Request() req, @Param('userId') userId: string) {
     // Only admin/super admin can view other users' KYC
-    if (!['ADMIN', 'SUPER_ADMIN'].includes(req.user.role) && req.user.userId !== userId) {
+    if (!['ADMIN', 'SUPER_ADMIN'].includes(req.user.role) && req.user.id !== userId) {
       throw new BadRequestException('Insufficient permissions');
     }
 

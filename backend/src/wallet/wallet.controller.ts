@@ -10,22 +10,24 @@ export class WalletController {
 
   @Get()
   async getWallet(@Request() req) {
-    return this.walletService.getWallet(req.user.userId);
+    return this.walletService.getWallet(req.user.id);
   }
 
   @Get('transactions')
   async getUserTransactions(@Request() req) {
-    return this.walletService.getUserTransactions(req.user.userId);
+    return this.walletService.getUserTransactions(req.user.id);
   }
 
   @Post('topup')
   async topUpWallet(@Request() req, @Body() topUpDto: TopUpWalletDto) {
-    return this.walletService.createTopUpRequest(req.user.userId, topUpDto);
+    console.log('User from request:', req.user);
+    console.log('User ID:', req.user?.id);
+    return this.walletService.createTopUpRequest(req.user.id, topUpDto);
   }
 
   @Post('withdraw')
   async withdrawWallet(@Request() req, @Body() withdrawDto: WithdrawWalletDto) {
-    return this.walletService.createWithdrawRequest(req.user.userId, withdrawDto);
+    return this.walletService.createWithdrawRequest(req.user.id, withdrawDto);
   }
 
   // Admin endpoints

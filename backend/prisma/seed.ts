@@ -39,6 +39,20 @@ async function main() {
   console.log('👥 Creating users...');
   const hashedPassword = await bcrypt.hash('password123', 12);
 
+  // Create Super Admin first
+  const superAdminUser = await prisma.user.create({
+    data: {
+      email: 'superadmin@mubinyx.com',
+      password: hashedPassword,
+      name: 'Super Administrator',
+      phone: '+1234567888',
+      role: 'SUPER_ADMIN',
+      status: 'VERIFIED',
+      referralCode: 'SUPERADMIN001',
+      emailVerified: true,
+    },
+  });
+
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@mubinyx.com',
@@ -94,6 +108,16 @@ async function main() {
 
   // 3. Create Wallets for users
   console.log('💰 Creating user wallets...');
+  
+  // Create wallet for Super Admin
+  await prisma.wallet.create({
+    data: {
+      userId: superAdminUser.id,
+      balance: 1000000.00, // $1,000,000 for super admin
+      lockedBalance: 0,
+    },
+  });
+
   await prisma.wallet.create({
     data: {
       userId: adminUser.id,
@@ -515,8 +539,8 @@ async function main() {
   console.log('');
   console.log('📊 Summary:');
   console.log('- 3 Project Categories');
-  console.log('- 4 Users (1 Admin, 3 Regular)');
-  console.log('- 4 User Wallets');
+  console.log('- 5 Users (1 Super Admin, 1 Admin, 3 Regular)');
+  console.log('- 5 User Wallets');
   console.log('- 3 Crypto Networks');
   console.log('- 3 Investment Projects');
   console.log('- 4 Investments');
@@ -526,7 +550,8 @@ async function main() {
   console.log('- CMS Settings & Content');
   console.log('');
   console.log('🔑 Test Accounts:');
-  console.log('- Admin: admin@mubinyx.com / password123');
+  console.log('- Super Admin: superadmin@mubinyx.com / password123 ($1,000,000)');
+  console.log('- Admin: admin@mubinyx.com / password123 ($50,000)');
   console.log('- User 1: john@example.com / password123');
   console.log('- User 2: jane@example.com / password123');
   console.log('- User 3: mike@example.com / password123');

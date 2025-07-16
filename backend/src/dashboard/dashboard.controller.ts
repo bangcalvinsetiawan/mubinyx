@@ -19,7 +19,7 @@ export class DashboardController {
   @UseGuards(JwtAuthGuard)
   @Get('user-stats')
   async getUserStats(@Request() req) {
-    return this.dashboardService.getUserStats(req.user.userId);
+    return this.dashboardService.getUserStats(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
