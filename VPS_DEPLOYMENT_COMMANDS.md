@@ -80,8 +80,8 @@ ls -la
 # Navigate to backend
 cd /var/www/mubinyx/backend
 
-# Install production dependencies
-npm install --production
+# Install ALL dependencies (including devDependencies for build)
+npm install
 
 # Verify installation
 npm list --depth=0
@@ -92,8 +92,8 @@ npm list --depth=0
 # Navigate to frontend
 cd /var/www/mubinyx/frontend
 
-# Install dependencies
-npm install --production
+# Install ALL dependencies (including devDependencies for build)
+npm install
 
 # Build for production
 npm run build
@@ -446,17 +446,40 @@ git pull origin main
 
 # Update backend
 cd backend
-npm install --production
+npm install
 npm run build
 
 # Update frontend
 cd ../frontend
-npm install --production
+npm install
 npm run build
 
 # Restart applications
 cd ..
 pm2 restart ecosystem.config.js
+```
+
+### **Fix npm Dependencies Issues:**
+```bash
+# If you get UNMET DEPENDENCY errors, clean and reinstall
+cd /var/www/mubinyx/backend
+
+# Clean npm cache and node_modules
+rm -rf node_modules package-lock.json
+npm cache clean --force
+
+# Reinstall all dependencies
+npm install
+
+# Build for production
+npm run build
+
+# Do the same for frontend if needed
+cd ../frontend
+rm -rf node_modules package-lock.json .next
+npm cache clean --force
+npm install
+npm run build
 ```
 
 ### **Backup Database:**
@@ -472,6 +495,28 @@ tar -czf /var/backups/mubinyx/uploads_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/
 ```
 
 ## 🆘 **Troubleshooting**
+
+### **If you get UNMET DEPENDENCY errors:**
+```bash
+# Navigate to backend directory
+cd /var/www/mubinyx/backend
+
+# Clean everything and start fresh
+rm -rf node_modules package-lock.json
+npm cache clean --force
+
+# Install ALL dependencies (not just production)
+npm install
+
+# Build the application
+npm run build
+
+# If still having issues, check Node.js version
+node --version  # Should be 20.x
+
+# Check npm version
+npm --version   # Should be 10.x or higher
+```
 
 ### **If Applications Won't Start:**
 ```bash
