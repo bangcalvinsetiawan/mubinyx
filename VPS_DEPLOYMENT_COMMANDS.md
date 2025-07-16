@@ -92,8 +92,14 @@ npm list --depth=0
 # Navigate to frontend
 cd /var/www/mubinyx/frontend
 
+# Clean any existing modules first
+rm -rf node_modules package-lock.json .next
+
 # Install ALL dependencies (including devDependencies for build)
 npm install
+
+# Rebuild native dependencies for Linux platform
+npm rebuild
 
 # Build for production
 npm run build
@@ -474,12 +480,18 @@ npm install
 # Build for production
 npm run build
 
-# Do the same for frontend if needed
+# Fix frontend lightningcss issues
 cd ../frontend
 rm -rf node_modules package-lock.json .next
 npm cache clean --force
 npm install
+npm rebuild lightningcss
+npm rebuild @tailwindcss/postcss
 npm run build
+
+# If still failing, use the fix script
+chmod +x ../fix-lightningcss.sh
+../fix-lightningcss.sh
 ```
 
 ### **Backup Database:**
@@ -495,6 +507,32 @@ tar -czf /var/backups/mubinyx/uploads_$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/
 ```
 
 ## 🆘 **Troubleshooting**
+
+### **If you get lightningcss native binary errors:**
+```bash
+# Navigate to frontend directory
+cd /var/www/mubinyx/frontend
+
+# Clean everything completely
+rm -rf node_modules package-lock.json .next
+
+# Clear npm cache
+npm cache clean --force
+
+# Reinstall with platform-specific rebuild
+npm install
+
+# Force rebuild native dependencies for current platform
+npm rebuild lightningcss
+npm rebuild @tailwindcss/postcss
+
+# Alternative: Reinstall specific packages
+npm uninstall lightningcss @tailwindcss/postcss
+npm install lightningcss @tailwindcss/postcss
+
+# Try building again
+npm run build
+```
 
 ### **If you get UNMET DEPENDENCY errors:**
 ```bash

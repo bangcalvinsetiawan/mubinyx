@@ -87,6 +87,18 @@ else
     exit 1
 fi
 
+# Rebuild native dependencies for current platform
+print_status "Rebuilding native dependencies for Linux..."
+npm rebuild lightningcss 2>/dev/null || print_warning "lightningcss rebuild failed, trying alternative..."
+npm rebuild @tailwindcss/postcss 2>/dev/null || print_warning "@tailwindcss/postcss rebuild failed, trying alternative..."
+
+# If rebuild fails, try reinstalling problematic packages
+if [ $? -ne 0 ]; then
+    print_warning "Trying to reinstall native packages..."
+    npm uninstall lightningcss @tailwindcss/postcss
+    npm install lightningcss @tailwindcss/postcss
+fi
+
 # Build frontend
 print_status "Building frontend..."
 npm run build
