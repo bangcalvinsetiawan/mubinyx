@@ -15,6 +15,9 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { KycService } from './kyc.service';
 
+// Import multer types
+import 'multer';
+
 @Controller('kyc')
 @UseGuards(JwtAuthGuard)
 export class KycController {
@@ -28,7 +31,7 @@ export class KycController {
   async submitKyc(
     @Request() req,
     @Body() kycData: any,
-    @UploadedFiles() files: { document?: Express.Multer.File[], selfie?: Express.Multer.File[] }
+    @UploadedFiles() files: { document?: any[], selfie?: any[] }
   ) {
     if (!files.document || !files.selfie) {
       throw new BadRequestException('Both document and selfie are required');
