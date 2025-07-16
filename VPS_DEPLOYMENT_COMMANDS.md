@@ -171,8 +171,13 @@ npx prisma generate
 # Push database schema
 npx prisma db push
 
-# Seed initial data
-npx prisma db seed
+# Use simple seed if main seed fails
+npx tsx prisma/seed-simple.ts
+
+# Or use the automated reset script
+cd ..
+chmod +x reset-database.sh
+./reset-database.sh
 ```
 
 ### **13. Build Backend for Production**
