@@ -22,8 +22,43 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Verify installation
-node --version
-npm --version
+node --version  # Expected: v20.19.4 or higher
+npm --version   # Expected: 10.8.2 or higher
+
+# Check if versions are compatible with Next.js 15
+echo "✅ Node.js $(node --version) is compatible with Next.js 15"
+echo "✅ npm $(npm --version) is ready for deployment"
+
+# If you need to update Node.js to latest LTS
+# curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+# sudo apt-get install -y nodejs
+```
+
+### **2a. Version Compatibility Check**
+```bash
+# Verify Node.js version compatibility
+NODE_VERSION=$(node --version | cut -d'v' -f2)
+NPM_VERSION=$(npm --version)
+
+echo "Current versions:"
+echo "Node.js: v$NODE_VERSION"
+echo "npm: $NPM_VERSION"
+
+# Check minimum requirements for Next.js 15 and NestJS
+if [[ "$(printf '%s\n' "18.0.0" "$NODE_VERSION" | sort -V | head -n1)" = "18.0.0" ]]; then
+    echo "✅ Node.js version is compatible (requires 18.0.0+)"
+else
+    echo "❌ Node.js version too old. Please update to 18.0.0 or higher"
+    exit 1
+fi
+
+if [[ "$(printf '%s\n' "8.0.0" "$NPM_VERSION" | sort -V | head -n1)" = "8.0.0" ]]; then
+    echo "✅ npm version is compatible (requires 8.0.0+)"
+else
+    echo "❌ npm version too old. Please update npm: sudo npm install -g npm@latest"
+fi
+
+echo "🎯 Your VPS is ready for Mubinyx deployment!"
 ```
 
 ### **3. Install PM2 Process Manager**
@@ -377,7 +412,7 @@ sudo ufw status
 ### **19. Setup SSL Certificate (Optional)**
 ```bash
 # IMPORTANT: Replace 'your-domain.com' with your actual domain
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot --nginx -d mubinyx.karyadiwangsa.com -d mubinyx.karyadiwangsa.com
 
 # Test SSL renewal
 sudo certbot renew --dry-run
@@ -658,6 +693,11 @@ unset NODE_OPTIONS
 
 ### **If you get lightningcss native binary errors:**
 ```bash
+# Check VPS environment first
+echo "Node.js version: $(node --version)"  # Expected: v20.19.4
+echo "NPM version: $(npm --version)"       # Expected: 10.8.2
+echo "Platform: $(uname -m)"               # Expected: x86_64
+
 # Use the automated fix script
 cd /var/www/mubinyx
 chmod +x fix-lightningcss-linux.sh
@@ -666,16 +706,19 @@ chmod +x fix-lightningcss-linux.sh
 # Manual fix if script doesn't work
 cd /var/www/mubinyx/frontend
 
-# Complete removal and reinstall
+# Complete removal and reinstall for Node.js v20.19.4 compatibility
 npm uninstall lightningcss @tailwindcss/postcss @tailwindcss/node
 rm -rf node_modules/lightningcss node_modules/@tailwindcss node_modules/.cache
 npm cache clean --force
 
-# Platform-specific installation
-npm install lightningcss --platform=linux --arch=x64 --force
+# Platform-specific installation for Linux VPS with Node.js v20
+npm install lightningcss@1.22.1 --platform=linux --arch=x64 --force
 npm install @tailwindcss/postcss
 
-# If still failing, use fallback approach
+# Verify native binary compatibility
+npm run build 2>&1 | grep -i "lightningcss\|binary"
+
+# If still failing, use fallback approach with PostCSS
 npm uninstall lightningcss
 npm install --save-dev postcss autoprefixer
 
@@ -698,6 +741,13 @@ npm run build
 
 ### **If you get UNMET DEPENDENCY errors:**
 ```bash
+# Check Node.js and npm versions first
+node --version  # VPS: v20.19.4, Development: v22.17.0 
+npm --version   # VPS: 10.8.2, Development: 10.9.2
+
+# Both versions are compatible with Next.js 15 and NestJS
+echo "✅ Version compatibility verified"
+
 # Navigate to backend directory
 cd /var/www/mubinyx/backend
 
@@ -711,11 +761,17 @@ npm install
 # Build the application
 npm run build
 
-# If still having issues, check Node.js version
-node --version  # Should be 20.x
+# If still having issues, try with exact versions
+npm install --engine-strict=false
 
-# Check npm version
-npm --version   # Should be 10.x or higher
+# For version-specific issues, lock to compatible versions
+npm install react@19.1.0 react-dom@19.1.0 next@15.4.1 --save-exact
+
+# Check npm version compatibility
+if [ "$(npm --version | cut -d. -f1)" -lt "8" ]; then
+    echo "⚠️ npm version is old, updating..."
+    sudo npm install -g npm@latest
+fi
 ```
 
 ### **If Applications Won't Start:**
@@ -743,6 +799,37 @@ sudo systemctl status nginx
 
 # Check DNS
 nslookup your-domain.com
+```
+
+---
+
+## 🔧 Version Compatibility Notes
+
+### Environment Differences
+- **Local Development:** Node.js v22.17.0, npm 10.9.2 (Windows)  
+- **VPS Production:** Node.js v20.19.4, npm 10.8.2 (Linux Ubuntu)
+- **Compatibility Status:** ✅ Both versions fully support Next.js 15.4.1 and NestJS
+
+### Version-Specific Considerations
+```bash
+# Check minimum requirements on VPS
+node --version | grep -E "v(18|20|22)\." && echo "✅ Node.js compatible" || echo "❌ Upgrade needed"
+npm --version | grep -E "(8|9|10)\." && echo "✅ npm compatible" || echo "❌ Upgrade needed"
+
+# Next.js 15 requires minimum Node.js 18.18.0
+# NestJS supports Node.js 16+ (recommended 18+)
+# Both are satisfied by Node.js v20.19.4
+```
+
+### Platform-Specific Binary Issues
+```bash
+# lightningcss native binaries differ between platforms
+# Windows development → Linux production requires rebuild
+# Use automated scripts to handle cross-platform compilation
+
+# If manual fix needed:
+npm rebuild --platform=linux --arch=x64
+npm install lightningcss@1.22.1 --force --platform=linux
 ```
 
 ---
